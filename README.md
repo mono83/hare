@@ -14,6 +14,12 @@ go build -o target/hare main.go
 target/hare --help
 ```
 
+Or build Docker image:
+```bash
+docker build -t hare .
+docker run --rm hare --help
+```
+
 RabbitMQ address and credentials are configured using `--uri` command line 
 argument and have default value `amqp://guest:guest@localhost:5672/` 
 
