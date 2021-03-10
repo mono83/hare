@@ -1,5 +1,10 @@
-/idea/
+/.idea/
 /target/
 /build/
 *.iml
 
+/*.json
+/*.text
+/*.yaml
+/*.txt
+/*.dump
