@@ -58,13 +58,21 @@ Flags:
 
 #### copy
 
-Copies all messages from source queue to target queue
+Copies all messages from source queue to target queue.
+
+With `-e exchange` parameter it is possible to send data into exchange instead of queue, queue name
+in that case will be used as routing key. If queue name start with `#` hare will replace routing key
+with corresponding header value. For example passing `#class` as queue causes reading routing key 
+from `class` header of every message.
 
 ```
 $ hare copy --help
 
 Usage:
   hare copy source target [flags]
+
+Flags:
+  -e, --exchange string   Exchange to use for copied messages
 ```
 
 
@@ -72,11 +80,19 @@ Usage:
 
 Moves messages from one queue to another
 
+With `-e exchange` parameter it is possible to send data into exchange instead of queue, queue name
+in that case will be used as routing key. If queue name start with `#` hare will replace routing key
+with corresponding header value. For example passing `#class` as queue causes reading routing key
+from `class` header of every message.
+
 ```
 $ hare move --help
 
 Usage:
   hare move source target [flags]
+
+Flags:
+  -e, --exchange string   Exchange to use for moved messages
 ```
 
 #### download
@@ -98,8 +114,13 @@ Flags:
 
 #### upload
 
-Uploads messages from local file to rabbitMQ. By default will upload into `queue`, passed as CLI argument, 
-but if `exchange` flag is provided message will be sent to specified exchange with routing key equal to `queue`.
+Uploads messages from local file to RabbitMQ. 
+
+With `-e exchange` parameter it is possible to send data into exchange instead of queue, queue name
+in that case will be used as routing key. If queue name start with `#` hare will replace routing key
+with corresponding header value. For example passing `#class` as queue causes reading routing key
+from `class` header of every message.
+
 
 ```
 $ hare upload --help

@@ -61,7 +61,7 @@ func restore(ch *amqp.Channel, queue string, messages *[]mapping.Message) {
 	if messages != nil {
 		xray.BOOT.Info("Restoring :count messages in :name", args.Count(len(*messages)), args.Name(queue))
 		for _, m := range *messages {
-			if err := m.Publish(ch, queue); err != nil {
+			if err := m.Publish(ch, "", queue); err != nil {
 				xray.BOOT.Error("Error restoring message :err", args.Error{Err: err})
 			}
 		}

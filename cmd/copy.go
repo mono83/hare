@@ -9,6 +9,8 @@ import (
 	"github.com/streadway/amqp"
 )
 
+var copyExchange string
+
 var copyCmd = &cobra.Command{
 	Use:   "copy source target",
 	Short: "Copies all messages from source queue to target queue",
@@ -36,7 +38,7 @@ var copyCmd = &cobra.Command{
 				}
 				m := mapping.FromDelivery(d)
 				messages = append(messages, m)
-				if err := m.Publish(ch, target); err != nil {
+				if err := m.Publish(ch, copyExchange, target); err != nil {
 					return err
 				}
 				count++
@@ -45,4 +47,14 @@ var copyCmd = &cobra.Command{
 			return nil
 		})
 	},
+}
+
+func init() {
+	copyCmd.Flags().StringVarP(
+		&copyExchange,
+		"exchange",
+		"e",
+		"",
+		"Exchange to use for copied messages",
+	)
 }

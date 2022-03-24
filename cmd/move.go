@@ -9,6 +9,8 @@ import (
 	"github.com/streadway/amqp"
 )
 
+var moveExchange string
+
 var moveCmd = &cobra.Command{
 	Use:   "move source target",
 	Short: "Moves all messages from source queue to target queue",
@@ -32,7 +34,7 @@ var moveCmd = &cobra.Command{
 					xray.BOOT.Info("No more messages")
 					break
 				}
-				if err := mapping.FromDelivery(d).Publish(ch, target); err != nil {
+				if err := mapping.FromDelivery(d).Publish(ch, moveExchange, target); err != nil {
 					return err
 				}
 				count++
@@ -41,4 +43,14 @@ var moveCmd = &cobra.Command{
 			return nil
 		})
 	},
+}
+
+func init() {
+	moveCmd.Flags().StringVarP(
+		&moveExchange,
+		"exchange",
+		"e",
+		"",
+		"Exchange to use for moved messages",
+	)
 }

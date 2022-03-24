@@ -136,24 +136,31 @@ func (m Message) ToPublishing() amqp.Publishing {
 	}
 }
 
-// Publish publishes message to given queue using given channel
-func (m Message) Publish(ch *amqp.Channel, queue string) error {
+// Publish publishes message to given exchange using given channel
+func (m Message) Publish(ch *amqp.Channel, exchange, routingKey string) error {
 	if ch == nil {
 		return errors.New("nil channel")
 	}
-	if len(queue) == 0 {
-		return errors.New("empty target queue name")
+	if len(exchange) == 0 && len(routingKey) == 0 {
+		return errors.New("empty both exchange and routing key")
 	}
-	return ch.Publish("", queue, true, false, m.ToPublishing())
+	return ch.Publish(exchange, m.prepareRoutingKey(routingKey), true, false, m.ToPublishing())
 }
 
-// PublishCustom publishes message to given exchange using routing key
-func (m Message) PublishCustom(ch *amqp.Channel, exchange, routingKey string) error {
-	if ch == nil {
-		return errors.New("nil channel")
+func (m Message) prepareRoutingKey(routingKey string) string {
+	if len(routingKey) < 2 {
+		return routingKey
 	}
-	if len(exchange) == 0 {
-		return errors.New("empty exchange name")
+	if len(routingKey) > 1 && (routingKey[0] == '@' || routingKey[0] == '#' || routingKey[0] == '$') {
+		// Reading routing key from header
+		header := routingKey[1:]
+		if len(m.Headers) > 0 {
+			if h, ok := m.Headers[header]; ok {
+				// Header is present
+				return fmt.Sprint(h)
+			}
+		}
+		return ""
 	}
-	return ch.Publish(exchange, routingKey, true, false, m.ToPublishing())
+	return routingKey
 }

@@ -40,15 +40,8 @@ var uploadCmd = &cobra.Command{
 					return err
 				}
 				for i := 0; i < uploadReplicate; i++ {
-					if len(uploadExchange) > 0 {
-						// Custom exchange
-						if err := m.PublishCustom(ch, uploadExchange, queue); err != nil {
-							return err
-						}
-					} else {
-						if err := m.Publish(ch, queue); err != nil {
-							return err
-						}
+					if err := m.Publish(ch, uploadExchange, queue); err != nil {
+						return err
 					}
 					count++
 					if count%100 == 0 {
