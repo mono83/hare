@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/streadway/amqp"
 	"io"
 	"os"
 	"time"
+
+	"github.com/streadway/amqp"
 )
 
 // Message is a structure to be mapped into JSON
@@ -119,7 +120,7 @@ func (m Message) Fprint(w io.Writer, formatted bool) (err error) {
 // ToPublishing converts message to AMQP publishing
 func (m Message) ToPublishing() amqp.Publishing {
 	return amqp.Publishing{
-		Headers:         m.Headers,
+		Headers:         stripUnsupportedPublishingHeaders(m.Headers),
 		ContentType:     m.ContentType,
 		ContentEncoding: m.ContentEncoding,
 		DeliveryMode:    m.DeliveryMode,
@@ -163,4 +164,26 @@ func (m Message) prepareRoutingKey(routingKey string) string {
 		return ""
 	}
 	return routingKey
+}
+
+// stripUnsupportedPublishingHeaders removes unsupported headers
+func stripUnsupportedPublishingHeaders(m map[string]interface{}) map[string]interface{} {
+	if len(m) == 0 {
+		// No data
+		return m
+	}
+	if _, ok := m["x-death"]; !ok {
+		// No unsupported header
+		return m
+	}
+
+	out := map[string]interface{}{}
+	for k, v := range m {
+		if k == "x-death" {
+			// Skip
+		} else {
+			out[k] = v
+		}
+	}
+	return out
 }
