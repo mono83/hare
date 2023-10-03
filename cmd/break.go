@@ -4,8 +4,8 @@ import (
 	"github.com/mono83/hare/mapping"
 	"github.com/mono83/xray"
 	"github.com/mono83/xray/args"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/spf13/cobra"
-	"github.com/streadway/amqp"
 	"os"
 )
 
